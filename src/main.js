@@ -1,68 +1,56 @@
 import chalk from 'chalk'
 import fs from 'fs'
-import parse from 'csv-parse'
+import csv  from 'csv-parser'
 import _ from 'lodash'
 import ora from 'ora';
 
-export const parseCSV = ({ignore, file}) => {
-    const parser = parse()
+export const parseCSV = async ({dev, ignore, file}) => {
+
     const spinner = ora({
         text: "Parsing CSV",
         spinner: "material"
     });
 
-    const playerData = []
+    var gameWeek
+    const gameData = []
 
-    const stream = fs.createReadStream(file);
-    stream.on('open', function () {
-        spinner.start()
-        stream.pipe(parser).on('readable', function() {
+    spinner.start()
+    await new Promise(r => setTimeout(r, 1000));
+    const stram = fs.createReadStream(file)
+    .pipe(csv({
+        mapHeaders: ({ header }) => header.toLowerCase().replace(/ /g,"-").replace(/%/g,""),
+        row: true
+    }))
+    .on('data', (data) => {
 
-            let headers = parser.read()
-            const headerLabels = _.drop(headers, ignore)
+        if(data['game'].toLowerCase() == "totals") {
+            stram.destroy()
+            return
+        }
 
-            const labels = []
+        if(!data['game']) {
+            data['game'] = gameWeek
+        } else {
+            gameWeek = data['game'] 
+        }
 
-            _.forEach(headerLabels, function(label) {
-                const l = label.toLowerCase().replace(/ /g,"-");
-                labels.push(l)
-            })
-
-
-            let record
-            while (record = parser.read()) {
-                const stats = _.drop(record, ignore)
-                var week
-                const weekCheck = /\bGame\b/.test(record[0]);
-
-                if(weekCheck) {
-                    week = record[0]
-                }
-
-                if(stats[0] == ''){
-                    stream.destroy()
-                }
-
-                const thisPlayer = []
-
-                _.forEach(stats, function(value, i) {
-                    thisPlayer.push({
-                        property: labels[i],
-                        value: value
-                    })
-                });
-                playerData.push([...thisPlayer, {
-                    property: "gameweek",
-                    value: week
-                }])
+        // Update percentage
+        _.forEach(data, function(value, key) {
+            if(value.indexOf("%") > -1) {
+                const wholePercent = parseInt(value.replace(/%/g,""))
+                data[key] = wholePercent/100
+                data[`${key}-percent`] = wholePercent
             }
-
-            //console.log(playerData);
-            parser.end()
-
-        })
-        .on('close', function (err) {
-            spinner.stop()
         });
+
+        gameData.push(JSON.stringify(data))
+    })
+    .on('close', () => {
+        spinner.stop()
+        if(dev) {
+            console.log(gameData[1])
+        } else {
+            process.stdout.write(JSON.stringify(gameData))
+        }
     });
 }

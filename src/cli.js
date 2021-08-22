@@ -8,7 +8,9 @@ const initArgs = (rawArgs) => {
             "--ignore": Number,
             "-i": "--ignore",
             "--file": String,
-            "-f": "--file"
+            "-f": "--file",
+            "--dev": Boolean,
+            "-d": "--dev"
         },
         {
             argv: rawArgs.slice(2)
@@ -19,7 +21,8 @@ const initArgs = (rawArgs) => {
 
     return {
         ignore: args['--ignore'] || 1,
-        file: args['--file']
+        file: args['--file'],
+        dev: args['--dev'] || false
     };
 }
 
