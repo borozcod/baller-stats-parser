@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  baller-parser
+
+  Sample SAM Template for baller-parser
+  
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  ExtractCSV:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: extract-csv/
+      CompatibleRuntimes:
+        - nodejs14.x
+    Metadata:
+      nodejs14.x
+  ParseCSV:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: parse-csv/
+      Handler: main.lambdaHandler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 100
+      Policies:
+        - AWSLambdaBasicExecutionRole
