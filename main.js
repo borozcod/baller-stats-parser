@@ -20,7 +20,8 @@ exports.extractAndParseCSV = () => {
                 mapHeaders: ({ header }) => header.toLowerCase().replace(/ /g,"-").replace(/%/g,""),
                 row: true
             }))
-            .on('data', (data) => {
+            .on('data', (csvData) => {
+                const data = csvData
 
                 if(data['game']) {
                     if(data['game'].toLowerCase() == "totals" || data['game'].toLowerCase() == "team name") {
@@ -42,7 +43,7 @@ exports.extractAndParseCSV = () => {
                         data[`${key}-percent`] = wholePercent
                     }
                 });
-                const cleanData = _.pickBy(data, (key,val) => key);
+                const cleanData = _.pickBy(data, (val,key) => !key == "");
                 gameData.push(cleanData)
             })
             .on('close', async () => {
