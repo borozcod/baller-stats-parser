@@ -20,7 +20,7 @@ jobs:
         npm ci
     - name: zip files
       run: |
-        zip -q -r ./bundle.zip ./
+        zip -q -r ./bundle.zip ./ -x "*.git*" -x "*.md"
     - name: upload to lambda
       run: |
         aws lambda update-function-code --function-name ExtractAndParseCSV --zip-file fileb://bundle.zip
