@@ -42,8 +42,8 @@ exports.extractAndParseCSV = () => {
                         data[`${key}-percent`] = wholePercent
                     }
                 });
-
-                gameData.push(data)
+                const cleanData = _.pickBy(data, (key,val) => key);
+                gameData.push(cleanData)
             })
             .on('close', async () => {
                 try {
