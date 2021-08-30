@@ -1,10 +1,10 @@
+name: Update Lambda Function
+on:
+  push:
+    branches:
+      - main
 jobs:
-  on:
-    push:
-      branches:
-        - main
   deploy:
-    name: Update Lambda Function
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
