@@ -1,0 +1,15 @@
+{
+  "name": "@baller-stats/extract-and-parse",
+  "version": "1.0.0",
+  "description": "Extract and parse basketball stats from csv into json",
+  "main": "main.js",
+  "repository": "https://github.com/borozcod/baller-stats-parser.git",
+  "author": "Bryan Orozco",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.978.0",
+    "csv-parser": "^3.0.0",
+    "lodash": "^4.17.21",
+    "node-fetch": "^2.6.1"
+  }
+}
