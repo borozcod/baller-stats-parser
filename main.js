@@ -12,38 +12,37 @@ exports.extractAndParseCSV = () => {
 
     const {id, sheets} = JSON.parse(configSheet);
     const gameData = []
+    var game = ""
 
     sheets.forEach(async (sheet) => {
         await fetch(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${sheet}`)
         .then(res => {
             res.body.pipe(csv({
-                mapHeaders: ({ header }) => header.toLowerCase().replace(/ /g,"-").replace(/%/g,""),
+                mapHeaders: ({ header }) => header.toLowerCase().replace(/ /g,"-"),
                 row: true
             }))
             .on('data', (csvData) => {
                 const data = csvData
 
-                if(data['game']) {
-                    if(data['game'].toLowerCase() == "totals" || data['game'].toLowerCase() == "team name") {
-                        return
-                    }
-    
-                    if(!data['game']) {
-                        data['game'] = gameWeek
-                    } else {
-                        gameWeek = data['game'] 
-                    }
-                }
-
                 // Update percentage
                 _.forEach(data, function(value, key) {
                     if(value.indexOf("%") > -1) {
                         const wholePercent = parseInt(value.replace(/%/g,""))
-                        data[key] = wholePercent/100
-                        data[`${key}-percent`] = wholePercent
+                        // data[key] = wholePercent/100
+                        data[`${key}-percent`] = wholePercent/100
                     }
                 });
+
                 const cleanData = _.pickBy(data, (val,key) => !key == "");
+
+                // Spreadsheet only has the game value in the first row of the set
+                if(cleanData.hasOwnProperty('game')) {
+                    if(cleanData['game'] !== ""){
+                        game = cleanData['game']
+                    } else {
+                        cleanData['game'] = game
+                    }
+                }
                 gameData.push(cleanData)
             })
             .on('close', async () => {
@@ -57,7 +56,6 @@ exports.extractAndParseCSV = () => {
                     };
 
                     const putResult = await s3.putObject(destparams).promise();
-
                 } catch (error) {
                     console.log(error);
                     return;
