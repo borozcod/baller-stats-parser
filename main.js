@@ -10,15 +10,16 @@ exports.extractAndParseCSV = () => {
     const configSheet = Buffer.from(SHEET_CONFIG, 'base64').toString("utf8");
     const {id, sheets, leaders} = JSON.parse(configSheet);
 
+    var teamID = 0;
+
     sheets.forEach( async (sheet) => {
 
         const gameData = await parseGame(id, sheet);
 
         try {
-            const filename = sheet.toLowerCase().replace(/ /g,"-")
-            const putResult = await s3.putObject({
+            await s3.putObject({
                 Bucket: "baller-stats-data/json",
-                Key: `${filename}.json`,
+                Key: `team-${teamID}.json`,
                 Body: JSON.stringify(gameData),
                 ContentType: "application/json",
             }).promise();
@@ -26,16 +27,26 @@ exports.extractAndParseCSV = () => {
             console.log(error);
             return;
         }
+        teamID++;
     });
 
-    parseLeaders(id, leaders).then(async (leaders) => {
+    parseLeaders(id, leaders).then(async ({leagueLeaders, teamList}) => {
         try {
-            const putResult = await s3.putObject({
+
+            await s3.putObject({
                 Bucket: "baller-stats-data/json",
                 Key: "leaders.json",
-                Body: JSON.stringify(leaders),
+                Body: JSON.stringify(leagueLeaders),
                 ContentType: "application/json",
             }).promise();
+
+            await s3.putObject({
+                Bucket: "baller-stats-data/json",
+                Key: "teams.json",
+                Body: JSON.stringify(teamList),
+                ContentType: "application/json",
+            }).promise();
+
         } catch (error) {
             console.log(error);
             return;
