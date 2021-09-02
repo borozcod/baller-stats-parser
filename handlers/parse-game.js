@@ -56,7 +56,7 @@ exports.parseGame = (id, sheet)  => {
 
                 if(data['last'] === "Total") {
                     gameData["total"]["team_aggregate"] = data; // Team total
-                } else if(game === "Totals") {
+                } else if(game === "Totals" && data['last'].toLocaleLowerCase() !== 'last') {
                     gameData["total"]["stats"].push(data); // Individual total
                 } else if(game.toLocaleLowerCase().toLocaleLowerCase().indexOf("game") > -1) {
                     gameData["events"][i]["stats"].push(data); // Regular gameweek
