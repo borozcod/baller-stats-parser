@@ -15,9 +15,8 @@ exports.parseTeams = (id, sheet)  => {
             }))
             .on('data', (csvData) => {
                 const data = _.pickBy(csvData, (val,key) => !key == "");
-                const apiUrl = data['team'].toLowerCase().replace(/ /g,"-");
                 teamList.push({
-                    "team": apiUrl,
+                    "team": data['team'].match(/\d+/)[0],
                     "name": data['name'],
                 })
             })
