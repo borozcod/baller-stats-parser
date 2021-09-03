@@ -54,12 +54,15 @@ exports.parseGame = (id, sheet)  => {
                     }
                 }
 
+                const skip = ['Last', '', 'Total'];
+                const cleanGameData = _.omit(data, 'game');
+
                 if(data['last'] === "Total") {
-                    gameData["total"]["team_aggregate"] = data; // Team total
-                } else if(game === "Totals" && data['last'].toLocaleLowerCase() !== 'last') {
-                    gameData["total"]["stats"].push(data); // Individual total
+                    gameData["total"]["team_aggregate"] = cleanGameData; // Team total
+                } else if(game === "Totals" && !(_.indexOf(skip, data['last']) > -1)) {
+                    gameData["total"]["stats"].push(cleanGameData); // Individual total
                 } else if(game.toLocaleLowerCase().toLocaleLowerCase().indexOf("game") > -1) {
-                    gameData["events"][i]["stats"].push(data); // Regular gameweek
+                    gameData["events"][i]["stats"].push(cleanGameData); // Regular gameweek
                 }
             })
             .on('close', () => {
