@@ -26,7 +26,10 @@ exports.parseLeaders = (id, sheet)  => {
                     }
                 });
 
-                leagueLeaders.push(data)
+                const skip = [''];
+                if( !(_.indexOf(skip, data['last']) > -1) ) {
+                    leagueLeaders.push(data);
+                }
             })
             .on('close', () => {
                 resolve(leagueLeaders);
