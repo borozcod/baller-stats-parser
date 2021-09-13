@@ -56,13 +56,16 @@ exports.parseGame = (id, sheet)  => {
 
                 const skip = ['Last', '', 'Total'];
                 const cleanGameData = _.omit(data, 'game');
+                const gameCheck = game.toLocaleLowerCase();
 
-                if(data['last'] === "Total") {
-                    gameData["total"]["team_aggregate"] = cleanGameData; // Team total
-                } else if(game === "Totals" && !(_.indexOf(skip, data['last']) > -1)) {
-                    gameData["total"]["stats"].push(cleanGameData); // Individual total
-                } else if(game.toLocaleLowerCase().toLocaleLowerCase().indexOf("game") > -1) {
-                    gameData["events"][i]["stats"].push(cleanGameData); // Regular gameweek
+                if(!(_.indexOf(skip, data['last']) > -1)) {
+                    if(data['last'] === "Total") {
+                        gameData["total"]["team_aggregate"] = cleanGameData; // Team total
+                    } else if(gameCheck === "totals") {
+                        gameData["total"]["stats"].push(cleanGameData); // Individual total
+                    } else if(gameCheck.indexOf("game") > -1) {
+                        gameData["events"][i]["stats"].push(cleanGameData); // Regular gameweek
+                    }
                 }
             })
             .on('close', () => {
