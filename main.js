@@ -45,6 +45,8 @@ exports.extractAndParseCSV = () => {
     })
 
     parseLeaders(id, leaders).then(async (leagueLeaders) => {
+        // uncomment for testing
+        // process.stdout.write(JSON.stringify(leagueLeaders))
         try {
             await s3.putObject({
                 Bucket: "baller-stats-data/json",

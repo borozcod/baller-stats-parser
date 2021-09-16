@@ -5,7 +5,7 @@ const _ = require('lodash');
 exports.parseLeaders = (id, sheet)  => {
     return new Promise( async (resolve, reject) =>{
 
-        const leagueLeaders = [];
+        var leagueLeaders = [];
 
         await fetch(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${sheet}`)
         .then(res => {
@@ -32,6 +32,7 @@ exports.parseLeaders = (id, sheet)  => {
                 }
             })
             .on('close', () => {
+                leagueLeaders = _.sortBy(leagueLeaders, ['last']);
                 resolve(leagueLeaders);
             });
         });
