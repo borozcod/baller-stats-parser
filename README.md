@@ -4,7 +4,7 @@ This is a lambda function that extracts and parses a csv file form google sheets
 ### Stream
 The file is fetched and handled as a stream.
 ### Environment Variable
-`SHEET_CONFIG` is an encoded base64 json string. Once decoded, it's expeced to have the following schema. The lambda function has this enviroment variable already set.
+`SHEET_CONFIG` is an encoded base64 json string. Once decoded, it's expeced to have the following schema. The lambda function has this enviroment variable already set. 
 ```json
 {
     "id": "SHEET_ID",
