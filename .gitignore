@@ -133,3 +133,5 @@ $RECYCLE.BIN/
 *.zip
 # testing
 *-temp*
+
+/export
